@@ -7,11 +7,12 @@
 \usepackage{icomma}
 \usepackage{tikz}
 \usepackage{float}
+\usepackage{circuitikz}
 
-\titulo{Diagnóstico Inicial}
+\titulo{Análise de um Circuito de Pequenos Sinais}
 \autor{Matheus Amaral da Costa}
 \data{Março de 2025}
-\instituicao{%
+\instituicao{
   Centro Universitário FAESA
   \par
   Engenharia da Computação}
@@ -28,13 +29,26 @@
 \section{Considerações Iniciais}
 Considerar que os capacitores estão "abertos".
 
-\section{Simplificação do Circuito}
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=\linewidth]{f1.jpeg}
-  \caption{Circuito Simplificado}
-  \label{fig:exemplo}
-\end{figure}
+\section{Representação do Circuito}
+\begin{center}
+    \begin{circuitikz}[american]
+        \draw (3,2) node[npn, anchor=B, scale=1.5](Q1){};
+        \draw (0,0) to node[ground]{} (0,0) to[sV, a=$v_{in}$,v=$1mV$] (0,2)
+          to[C] (Q1.B);
+        \draw (Q1.B) to[R, , a=$R_1$,l=$10k\Omega$]
+              ++(0,3) -- ++(0.5,0) -- ++(0,0.5)
+              node[ocirc](Vcc){$+10_{Vcc}$} 
+              (Vcc) ++(0,-0.5) -- ++(0.75,0) to[R, a=$R_C$, l=$3{,}6k\Omega$] (Q1.C);
+        \draw (Q1.C) to[C] (8,3.2) to[R, a=$R_L$,l=$10k\Omega$] (8,0)
+              node[ground]{};
+        \draw (Q1.B) to[R, l=$R_2$, a=$2{,}2k\Omega$] (3,0)
+              node[ground]{};
+        \draw (Q1.E) -- (4.3, 0) to[R, a=$R_E$, l=$1k\Omega$] (4.3,-2) node[ground]{};
+        \draw (Q1.E) to[C] (6.3,0.88);
+        \draw (6.3,0.88) -- (6.3,-1) node[ground]{};
+        \node at (4,-3) {\large \textbf{Figura 1 - Circuito Elétrico}};
+    \end{circuitikz}
+\end{center}
 
 \section{Dados do Circuito}
 \begin{itemize}
@@ -90,12 +104,16 @@ V_{CE} = 10 - (R_C + R_E) \cdot 1{,}1 \times 10^{-3} \implies V_{CE} = 10 - 5{,}
 \]
 
 \section{Gráfico $I_{C}$ x $V_{CE}$}
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\linewidth]{f2.jpeg}
-  \caption{Gráfico $I_{C}$ x $V_{CE}$}
-  \label{fig:exemplo}
-\end{figure}
+\begin{center}
+    \begin{tikzpicture}
+        \draw[->] (0,0) -- (5,0) node[right] {$V_{CE}$};
+        \draw[->] (0,0) -- (0,5) node[above] {$I_C$};
+        \draw[thick] (4,0) -- (0,4) node[left] {Saturação};
+        \node at (4,-0.3) {Corte};
+        \node at (3,2.3) {Operação};
+        \node at (2.5,-1) {\large \textbf{Figura 2 - Gráfico $I_C$ x $V_{CE}$}};
+    \end{tikzpicture}
+\end{center}
 
 \section{Conclusão}
 Devido ao fato de $I_{C}$ ser menor que 2{,}17 mA ($I_{C\text{máx}}$) e ser diferente de zero, a configuração está funcionando como um amplificador.
@@ -106,12 +124,29 @@ Considerar os capacitores em curto-circuito; \\
 Aterrar as fontes contínuas.
 
 \section{Simplificação do Circuito (Modelo Pi)}
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=\linewidth]{f3.jpeg}
-  \caption{Circuito Simplificado (Modelo Pi)}
-  \label{fig:exemplo}
-\end{figure}
+\begin{center}
+    \begin{circuitikz}[american]
+        \draw (-1,0) node[ground]{} to[sV, a=$v_{in}$, l=$1mV$] (-1,3);
+        \draw (-1,3) -- (1.5,3) 
+        to[R, a=$2{,}2k\Omega$,l=$R_{2}$] (1.5,0) node[ground]{};
+        \draw (1.5,3) -- (4,3) 
+        to[R, a=$10k\Omega$,l=$R_{1}$] (4,0) node[ground]{};
+        \draw (4,3) -- (6,3) 
+        to[R, l=$\beta re'$] (6,0);
+        \draw (6,0) -- (7,0) node[ground]{};
+        \draw (7,0) -- (8,0)
+         to[isource, a=$i_c$, invert] (8,3)
+         -- (10.5,3);
+        \draw (10.5,3) -- (10.5,3) 
+        to[R, a=$3{,}6k\Omega$, l=$R_C$] (10.5,0) node[ground]{};
+        \draw (10.5,3) -- (13,3) 
+        to[R, a=$10k\Omega$,l=$R_L$] (13,0) node[ground]{};
+        \draw[dashed] (9,-1) rectangle (14,3.5);
+        \node at (11,3.8) {$r_c$};
+    \end{circuitikz}
+    \vspace{0.5cm}
+    {\large \textbf{Figura 3 - Circuito Simplificado (Modelo Pi)}}
+\end{center}
 
 \section{Cálculo de $r_c$}
 \[
